@@ -8,11 +8,15 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewTreeObserver;
+import android.view.animation.AnimationUtils;
+import android.view.animation.GridLayoutAnimationController;
+import android.view.animation.LayoutAnimationController;
 import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.TextView;
 
 import com.jobinbasani.numbertowords.adapters.NumberPanelAdapter;
+import com.jobinbasani.numbertowords.components.GridNumberCell;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -22,10 +26,23 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final GridView gridView = (GridView) findViewById(R.id.controlGrid);
 
-        //addGridElements();
-        System.out.println(gridView.getHeight()+"****");
+        final GridLayout gridLayout = (GridLayout) findViewById(R.id.controlGrid);
+        final ViewTreeObserver observer = gridLayout.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                System.out.println("from listener  " + gridLayout.getHeight());
+                System.out.println("from listener width " + gridLayout.getWidth());
+                addGridElements(gridLayout.getHeight(),gridLayout.getWidth());
+                gridLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+
+       // gridLayout.setLayoutAnimation(new LayoutAnimationController(AnimationUtils.loadAnimation(mContext,R.anim.alpha_anim)));
+
+        /*System.out.println(gridView.getHeight()+"****");
+        final GridView gridView = (GridView) findViewById(R.id.controlGrid);
         final ViewTreeObserver observer = gridView.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -34,19 +51,19 @@ public class MainActivity extends ActionBarActivity {
                 gridView.setAdapter(new NumberPanelAdapter(mContext,gridView.getHeight()));
                 gridView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
-        });
+        });*/
     }
 
-    /*public void addGridElements(){
+    public void addGridElements(int height, int width){
         GridLayout gridControl = (GridLayout) findViewById(R.id.controlGrid);
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
         params.setGravity(Gravity.FILL);
         for(int i=0;i<16;i++){
-            TextView textView = new TextView(this);
-            textView.setText(i+" pos");
-            gridControl.addView(textView,i,params);
+            GridNumberCell cell = new GridNumberCell(mContext,height,width);
+            cell.setText(i+"h");
+            gridControl.addView(cell);
         }
-    }*/
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
