@@ -1,18 +1,18 @@
 package com.jobinbasani.numbertowords;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.GridLayout;
+import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.TextView;
 
 import com.jobinbasani.numbertowords.adapters.NumberPanelAdapter;
+import com.jobinbasani.numbertowords.components.ControlPadAnimation;
+import com.jobinbasani.numbertowords.components.GridBlockI;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -24,9 +24,8 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         final GridView gridView = (GridView) findViewById(R.id.controlGrid);
 
-        //addGridElements();
-        System.out.println(gridView.getHeight()+"****");
         final ViewTreeObserver observer = gridView.getViewTreeObserver();
+        gridView.setLayoutAnimation(new ControlPadAnimation(this));
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -35,18 +34,14 @@ public class MainActivity extends ActionBarActivity {
                 gridView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                GridBlockI block = (GridBlockI) view;
+                block.onClick();
+            }
+        });
     }
-
-    /*public void addGridElements(){
-        GridLayout gridControl = (GridLayout) findViewById(R.id.controlGrid);
-        GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-        params.setGravity(Gravity.FILL);
-        for(int i=0;i<16;i++){
-            TextView textView = new TextView(this);
-            textView.setText(i+" pos");
-            gridControl.addView(textView,i,params);
-        }
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -1,14 +1,11 @@
 package com.jobinbasani.numbertowords.adapters;
 
 import android.content.Context;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.jobinbasani.numbertowords.R;
 import com.jobinbasani.numbertowords.components.GridNumberCell;
@@ -39,7 +36,7 @@ public class NumberPanelAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int i) {
-        return null;
+        return mControls[i];
     }
 
     @Override
@@ -49,16 +46,8 @@ public class NumberPanelAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
-        GridNumberCell textView;
-        if(convertView == null){
-            textView = new GridNumberCell(mContext,cellHeight);
-        }else{
-            System.out.println("in grid cell recycle view");
-            textView = (GridNumberCell) convertView;
-        }
-        textView.setText(mControls[position]);
-        textView.setAnimation(animation);
-        animation.start();
-        return textView;
+        GridNumberCell gridCell = new GridNumberCell(mContext,cellHeight);
+        gridCell.setText(mControls[position]);
+        return gridCell;
     }
 }
