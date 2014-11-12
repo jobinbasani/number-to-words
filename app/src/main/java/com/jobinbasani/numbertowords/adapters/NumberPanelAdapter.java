@@ -8,7 +8,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 
 import com.jobinbasani.numbertowords.R;
+import com.jobinbasani.numbertowords.components.ConfigCell;
 import com.jobinbasani.numbertowords.components.GridNumberCell;
+import com.jobinbasani.numbertowords.config.NumberUtils;
 
 /**
  * Created by jobinbasani on 11/10/14.
@@ -19,13 +21,13 @@ public class NumberPanelAdapter extends BaseAdapter {
     private int cellHeight;
     Animation animation;
     private String[] mControls = {
-            "7","8","9","D","4","5","6","C","1","2","3","P"," ","0"," ","S"
+            "7", "8", "9", NumberUtils.DELETE, "4", "5", "6", NumberUtils.CLEAR, "1", "2", "3", NumberUtils.PLAY, NumberUtils.BLANK, "0", NumberUtils.BLANK, NumberUtils.SETTINGS
     };
 
     public NumberPanelAdapter(Context context, int containerHeight) {
         mContext = context;
-        cellHeight = containerHeight/(mControls.length/4);
-        System.out.println("cell height is "+cellHeight);
+        cellHeight = containerHeight / (mControls.length / 4);
+        System.out.println("cell height is " + cellHeight);
         animation = AnimationUtils.loadAnimation(mContext, R.anim.alpha_anim);
     }
 
@@ -46,8 +48,14 @@ public class NumberPanelAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
-        GridNumberCell gridCell = new GridNumberCell(mContext,cellHeight);
-        gridCell.setText(mControls[position]);
-        return gridCell;
+        if(mControls[position].equals(NumberUtils.BLANK) || NumberUtils.isNumber(mControls[position])){
+            GridNumberCell gridCell = new GridNumberCell(mContext, cellHeight);
+            gridCell.setText(mControls[position]);
+            return gridCell;
+        }else{
+            ConfigCell configCell = new ConfigCell(mContext, cellHeight);
+            configCell.setText(mControls[position]);
+            return configCell;
+        }
     }
 }

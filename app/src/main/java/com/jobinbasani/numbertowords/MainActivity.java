@@ -9,19 +9,23 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import com.jobinbasani.numbertowords.adapters.NumberPanelAdapter;
 import com.jobinbasani.numbertowords.components.ControlPadAnimation;
-import com.jobinbasani.numbertowords.components.GridBlockI;
+import com.jobinbasani.numbertowords.components.interfaces.GridBlockI;
+import com.jobinbasani.numbertowords.components.interfaces.NumberTransformerI;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements NumberTransformerI {
 
     private Context mContext = this;
+    private TextView numberTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        numberTextView = (TextView) findViewById(R.id.numberText);
         final GridView gridView = (GridView) findViewById(R.id.controlGrid);
 
         final ViewTreeObserver observer = gridView.getViewTreeObserver();
@@ -29,7 +33,6 @@ public class MainActivity extends ActionBarActivity {
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                System.out.println("from listener  "+gridView.getHeight());
                 gridView.setAdapter(new NumberPanelAdapter(mContext,gridView.getHeight()));
                 gridView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
@@ -63,5 +66,13 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void updateNumber(String number) {
+        if(numberTextView.getText().equals("0"))
+            numberTextView.setText(number);
+        else
+            numberTextView.append(number);
     }
 }

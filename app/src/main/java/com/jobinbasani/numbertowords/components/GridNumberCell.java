@@ -7,6 +7,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.jobinbasani.numbertowords.R;
+import com.jobinbasani.numbertowords.components.interfaces.GridBlockI;
+import com.jobinbasani.numbertowords.components.interfaces.NumberTransformerI;
+import com.jobinbasani.numbertowords.config.NumberUtils;
 
 /**
  * Created by jobinbasani on 11/10/14.
@@ -14,9 +17,10 @@ import com.jobinbasani.numbertowords.R;
 public class GridNumberCell extends TextView implements GridBlockI {
 
     private Animation animation;
-
+    private NumberTransformerI numberTransformer;
     public GridNumberCell(Context context, int height) {
         super(context);
+        numberTransformer = (NumberTransformerI) context;
         setHeight(height);
         setGravity(Gravity.CENTER);
         setBackgroundColor(getResources().getColor(R.color.colorPrimary));
@@ -26,13 +30,20 @@ public class GridNumberCell extends TextView implements GridBlockI {
         animation = AnimationUtils.loadAnimation(context,R.anim.alpha_anim);
     }
 
+    protected void runAnimation(){
+        setAnimation(animation);
+        animation.start();
+    }
+
+    protected NumberTransformerI getNumberTransformer(){
+        return numberTransformer;
+    }
+
     @Override
     public void onClick() {
-        System.out.println("in class method "+getText());
-
-        if(!getText().equals(" ")){
-            setAnimation(animation);
-            animation.start();
+        if(!getText().equals(NumberUtils.BLANK)){
+            runAnimation();
+            numberTransformer.updateNumber(getText().toString());
         }
     }
 }
