@@ -15,25 +15,34 @@ import com.jobinbasani.numbertowords.adapters.NumberPanelAdapter;
 import com.jobinbasani.numbertowords.components.ControlPadAnimation;
 import com.jobinbasani.numbertowords.components.interfaces.GridBlockI;
 import com.jobinbasani.numbertowords.components.interfaces.NumberTransformerI;
+import com.jobinbasani.numbertowords.config.NumberUtils;
 
 
 public class MainActivity extends ActionBarActivity implements NumberTransformerI {
 
     private Context mContext = this;
     private TextView numberTextView;
+    private NumberPanelAdapter numberAdapter;
+    private NumberPanelAdapter optionsAdapter;
+    private int containerHeight;
+    private GridView gridView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         numberTextView = (TextView) findViewById(R.id.numberText);
-        final GridView gridView = (GridView) findViewById(R.id.controlGrid);
+        gridView = (GridView) findViewById(R.id.controlGrid);
+        gridView.setLayoutAnimation(new ControlPadAnimation(this));
 
         final ViewTreeObserver observer = gridView.getViewTreeObserver();
-        gridView.setLayoutAnimation(new ControlPadAnimation(this));
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                gridView.setAdapter(new NumberPanelAdapter(mContext,gridView.getHeight()));
+                setContainerHeight(gridView.getHeight());
+                if(numberAdapter==null){
+                    numberAdapter = new NumberPanelAdapter(mContext,getContainerHeight(), NumberUtils.numberControls);
+                }
+                gridView.setAdapter(numberAdapter);
                 gridView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
@@ -70,9 +79,39 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
 
     @Override
     public void updateNumber(String number) {
-        if(numberTextView.getText().equals("0"))
+        if(numberTextView.getText().toString().equals("0"))
             numberTextView.setText(number);
         else
             numberTextView.append(number);
+    }
+
+    @Override
+    public void clearNumber(boolean clearAll) {
+        if(clearAll){
+            numberTextView.setText("0");
+        }else{
+            if(numberTextView.getText().length()>1){
+                numberTextView.setText(numberTextView.getText().toString().substring(0,numberTextView.getText().toString().length()-1));
+            }else{
+                numberTextView.setText("0");
+            }
+        }
+    }
+
+    @Override
+    public void setOptionsAdapter() {
+        if(optionsAdapter == null){
+            optionsAdapter = new NumberPanelAdapter(this,getContainerHeight(),NumberUtils.optionControls);
+        }
+        gridView.setAdapter(optionsAdapter);
+        
+    }
+
+    public int getContainerHeight() {
+        return containerHeight;
+    }
+
+    public void setContainerHeight(int containerHeight) {
+        this.containerHeight = containerHeight;
     }
 }

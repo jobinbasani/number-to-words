@@ -13,8 +13,11 @@
 
         android:layout_weight="1"
         android:gravity="center_vertical|right"
-        android:padding="@dimen/activity_vertical_margin"
-        android:text="0" />
+        android:text="0"
+        android:paddingLeft="@dimen/activity_vertical_margin"
+        android:paddingRight="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:background="@drawable/line_border" />
 
     <TextView
         android:layout_width="match_parent"
@@ -29,7 +32,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/controlGrid"
-
         android:numColumns="4"
         android:layout_weight="3" />
 

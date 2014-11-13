@@ -2,4 +2,5 @@
 <resources>
     <color name="colorPrimary">#C5171E</color>
     <color name="colorPrimaryDark">#970A0B</color>
+    <color name="colorConfigCell">#A31522</color>
 </resources>
