@@ -8,13 +8,13 @@ import com.jobinbasani.numbertowords.config.NumberUtils;
  * Created by jobinbasani on 11/12/14.
  */
 public class DeleteCell extends ConfigCell {
-    public DeleteCell(Context context, int height) {
-        super(context, height);
+    public DeleteCell(Context context, int height, int width) {
+        super(context, height, width);
     }
 
     @Override
     public void onClick() {
-        super.onClick();
+        runAnimation();
         getNumberTransformer().clearNumber(getText().toString().equals(NumberUtils.CLEAR));
     }
 }

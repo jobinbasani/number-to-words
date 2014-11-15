@@ -4,6 +4,7 @@ package com.jobinbasani.numbertowords.config;
  * Created by jobinbasani on 11/11/14.
  */
 public class NumberUtils {
+    public static final int CELL_HEIGHT_DIVISOR = 4;
     public static final String BLANK = " ";
     public static final String SETTINGS = "SETT";
     public static final String DELETE = "DEL";
