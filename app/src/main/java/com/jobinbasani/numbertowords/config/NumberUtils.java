@@ -74,7 +74,7 @@ public class NumberUtils {
 
     public static String convert(long number) {
         // 0 to 999 999 999 999
-        if (number == 0) { return "zero"; }
+        if (number == 0) { return "Zero"; }
 
         String snumber = Long.toString(number);
 
@@ -139,10 +139,26 @@ public class NumberUtils {
         String tradThousand;
         tradThousand = convertLessThanOneThousand(thousands);
         result =  result + tradThousand;
-
-        // remove extra spaces!
-        return result.replaceAll("^\\s+", "").replaceAll("\\b\\s{2,}\\b", " ");
+        result = result.replaceAll("^\\s+", "").replaceAll("\\b\\s{2,}\\b", " ");
+        if(result.length()>0){
+            result = new StringBuffer(result.length())
+                    .append(Character.toTitleCase(result.charAt(0)))
+                    .append(result.substring(1))
+                    .toString();
+        }
+        return capitalize(result);
     }
+
+    private static String capitalize(String word){
+        if(word.length()>0){
+            word = new StringBuffer(word.length())
+                    .append(Character.toTitleCase(word.charAt(0)))
+                    .append(word.substring(1))
+                    .toString();
+        }
+        return word;
+    }
+
     public static boolean isNumber(String str){
         return str.matches("\\d");
     }

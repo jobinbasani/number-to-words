@@ -3,6 +3,8 @@ package com.jobinbasani.numbertowords;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +19,7 @@ import com.jobinbasani.numbertowords.components.interfaces.NumberTransformerI;
 import com.jobinbasani.numbertowords.config.NumberUtils;
 
 
-public class MainActivity extends ActionBarActivity implements NumberTransformerI {
+public class MainActivity extends ActionBarActivity implements NumberTransformerI, TextWatcher {
 
     private Context mContext = this;
     private TextView numberTextView;
@@ -45,6 +47,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
                 gridLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
+        numberTextView.addTextChangedListener(this);
     }
 
     @Override
@@ -84,9 +87,8 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     public void updateNumber(String number) {
         if(numberTextView.getText().toString().equals("0"))
             numberTextView.setText(number);
-        else
+        else if(numberTextView.getText().toString().length()<12)
             numberTextView.append(number);
-        wordTextView.setText(NumberUtils.convert(new Long(numberTextView.getText().toString())));
     }
 
     @Override
@@ -129,5 +131,20 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
 
     public void setCellHeight(int cellHeight) {
         this.cellHeight = cellHeight;
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+        wordTextView.setText(NumberUtils.convert(new Long(numberTextView.getText().toString())));
     }
 }
