@@ -104,7 +104,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
             optionsAdapter = new NumberPanelAdapter(this,getContainerHeight(),NumberUtils.optionControls);
         }
         gridView.setAdapter(optionsAdapter);
-        
+
     }
 
     public int getContainerHeight() {
