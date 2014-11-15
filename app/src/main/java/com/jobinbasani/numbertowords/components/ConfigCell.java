@@ -17,6 +17,10 @@ public class ConfigCell extends GridNumberCell {
     @Override
     public void onClick() {
         runAnimation();
-        getNumberTransformer().updatePanel(NumberUtils.optionControls, true);
+        if(getText().toString().equals(NumberUtils.DELETE) || getText().toString().equals(NumberUtils.CLEAR)){
+            getNumberTransformer().clearNumber(getText().toString().equals(NumberUtils.CLEAR));
+        }else{
+            getNumberTransformer().updatePanel(NumberUtils.optionControls, true);
+        }
     }
 }

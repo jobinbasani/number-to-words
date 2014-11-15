@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.jobinbasani.numbertowords.components.ConfigCell;
 import com.jobinbasani.numbertowords.components.ControlPadAnimation;
-import com.jobinbasani.numbertowords.components.DeleteCell;
 import com.jobinbasani.numbertowords.components.GridNumberCell;
 import com.jobinbasani.numbertowords.components.interfaces.NumberTransformerI;
 import com.jobinbasani.numbertowords.config.NumberUtils;
@@ -22,14 +21,17 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
 
     private Context mContext = this;
     private TextView numberTextView;
+    private TextView wordTextView;
     private int cellHeight;
     private int cellWidth;
     private GridLayout gridLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         numberTextView = (TextView) findViewById(R.id.numberText);
+        wordTextView = (TextView) findViewById(R.id.wordText);
         gridLayout = (GridLayout) findViewById(R.id.controlGrid);
         gridLayout.setLayoutAnimation(new ControlPadAnimation(this));
 
@@ -84,6 +86,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
             numberTextView.setText(number);
         else
             numberTextView.append(number);
+        wordTextView.setText(NumberUtils.convert(new Long(numberTextView.getText().toString())));
     }
 
     @Override
@@ -104,8 +107,6 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
 
         if(NumberUtils.isNumber(config) || NumberUtils.BLANK.equals(config))
             configCell = new GridNumberCell(mContext,getCellHeight(),getCellWidth());
-        else if(config.equals(NumberUtils.DELETE) || config.equals(NumberUtils.CLEAR))
-            configCell = new DeleteCell(mContext,getCellHeight(),getCellWidth());
         else
             configCell = new ConfigCell(mContext, getCellHeight(),getCellWidth());
 
