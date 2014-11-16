@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.LruCache;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,10 +28,12 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     private int cellHeight;
     private int cellWidth;
     private GridLayout gridLayout;
+    private LruCache<String, View> viewCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewCache = new LruCache<String, View>(32);
         setContentView(R.layout.activity_main);
         numberTextView = (TextView) findViewById(R.id.numberText);
         wordTextView = (TextView) findViewById(R.id.wordText);
@@ -52,10 +55,9 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
 
     @Override
     public void updatePanel(String[] cells, boolean animate) {
+        gridLayout.removeAllViews();
         for(int i=0;i<cells.length;i++){
-            GridNumberCell v = new GridNumberCell(mContext,getCellHeight(),getCellWidth());
-            v.setText(cells[i]);
-            gridLayout.addView(getConfigCell(cells[i]),i);
+            gridLayout.addView(getConfigCell(cells[i], i));
         }
         if(animate)
             gridLayout.startLayoutAnimation();
@@ -104,8 +106,9 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
         }
     }
 
-    private View getConfigCell(String config){
-        GridNumberCell configCell = null;
+    private View getConfigCell(String config, int index){
+        GridNumberCell configCell = (GridNumberCell) viewCache.get(index+"_"+config.hashCode());
+        if(configCell!=null) return configCell;
 
         if(NumberUtils.isNumber(config) || NumberUtils.BLANK.equals(config))
             configCell = new GridNumberCell(mContext,getCellHeight(),getCellWidth());
@@ -113,7 +116,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
             configCell = new ConfigCell(mContext, getCellHeight(),getCellWidth());
 
         configCell.setText(config);
-
+        viewCache.put(index+"_"+config.hashCode(),configCell);
         return configCell;
     }
 
