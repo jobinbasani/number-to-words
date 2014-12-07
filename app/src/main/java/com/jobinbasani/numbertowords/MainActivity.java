@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.LruCache;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     private TextView numberTextView;
     private TextView wordTextView;
     private int cellHeight;
+    private int totalHeight;
     private int cellWidth;
     private GridLayout gridLayout;
     private LruCache<String, View> viewCache;
@@ -39,11 +41,14 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
         wordTextView = (TextView) findViewById(R.id.wordText);
         gridLayout = (GridLayout) findViewById(R.id.controlGrid);
         gridLayout.setLayoutAnimation(new ControlPadAnimation(this));
+        gridLayout.setUseDefaultMargins(false);
+        gridLayout.setAlignmentMode(GridLayout.ALIGN_MARGINS);
 
         final ViewTreeObserver observer = gridLayout.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
+                totalHeight = gridLayout.getHeight();
                 setCellHeight(gridLayout.getHeight()/NumberUtils.CELL_HEIGHT_DIVISOR);
                 setCellWidth(gridLayout.getWidth()/NumberUtils.CELL_HEIGHT_DIVISOR);
                 updatePanel(NumberUtils.numberControls, false);
@@ -107,17 +112,25 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     }
 
     private View getConfigCell(String config, int index){
-        GridNumberCell configCell = (GridNumberCell) viewCache.get(index+"_"+config.hashCode());
-        if(configCell!=null) return configCell;
+        GridNumberCell gridCell = (GridNumberCell) viewCache.get(index+"_"+config.hashCode());
+        if(gridCell!=null) return gridCell;
+        int height = 0;
 
-        if(NumberUtils.isNumber(config) || NumberUtils.BLANK.equals(config))
-            configCell = new GridNumberCell(mContext,getCellHeight(),getCellWidth());
+        if((index+1)%4 != 0)
+            gridCell = new GridNumberCell(mContext,getCellHeight(index>11),getCellWidth());
         else
-            configCell = new ConfigCell(mContext, getCellHeight(),getCellWidth());
+            gridCell = new ConfigCell(mContext, getCellHeight(index>11),getCellWidth());
 
-        configCell.setText(config);
-        viewCache.put(index+"_"+config.hashCode(),configCell);
-        return configCell;
+        gridCell.setText(config);
+
+        GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+        params.setGravity(Gravity.CENTER);
+
+        gridCell.setLayoutParams(params);
+
+        System.out.println("Key is "+index+"_"+config.hashCode());
+        viewCache.put(index+"_"+config.hashCode(),gridCell);
+        return gridCell;
     }
 
     public int getCellWidth() {
@@ -128,7 +141,8 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
         this.cellWidth = cellWidth;
     }
 
-    public int getCellHeight() {
+    public int getCellHeight(boolean isLastRow) {
+        if(isLastRow) return totalHeight - (cellHeight*3);
         return cellHeight;
     }
 

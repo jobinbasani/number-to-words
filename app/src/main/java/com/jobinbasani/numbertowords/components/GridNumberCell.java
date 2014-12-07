@@ -19,15 +19,17 @@ public class GridNumberCell extends TextView implements GridBlockI {
 
     private Animation animation;
     private NumberTransformerI numberTransformer;
+    private int cellHeight;
     public GridNumberCell(Context context, int height, int width) {
         super(context);
+        cellHeight = height;
         numberTransformer = (NumberTransformerI) context;
         setHeight(height);
-        setWidth(width);
         setGravity(Gravity.CENTER);
+        setTextSize((float) (height * .10));
+        setWidth(width);
         setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         setTextColor(getResources().getColor(android.support.v7.appcompat.R.color.abc_primary_text_material_dark));
-        setTextSize((float) (height * .1));
         setBackground(getResources().getDrawable(R.drawable.cell_border));
         animation = AnimationUtils.loadAnimation(context,R.anim.alpha_anim);
         setOnClickListener(new OnClickListener() {
@@ -37,6 +39,7 @@ public class GridNumberCell extends TextView implements GridBlockI {
                 gridBlock.onClick();
             }
         });
+
     }
 
     protected void runAnimation(){
@@ -51,7 +54,9 @@ public class GridNumberCell extends TextView implements GridBlockI {
     public void onClick() {
         if(!getText().toString().equals(NumberUtils.BLANK)){
             runAnimation();
-            numberTransformer.updateNumber(getText().toString());
+            if(NumberUtils.isNumber(getText().toString()))
+                numberTransformer.updateNumber(getText().toString());
         }
     }
+
 }
