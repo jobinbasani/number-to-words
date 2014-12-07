@@ -9,14 +9,14 @@ import java.text.DecimalFormat;
 public class NumberUtils {
     public static final int CELL_HEIGHT_DIVISOR = 4;
     public static final String BLANK = " ";
-    public static final String SETTINGS = "SETT";
-    public static final String DELETE = "DEL";
+    public static final String SETTINGS = "SETTINGS";
+    public static final String DELETE = "DELETE";
     public static final String PLAY = "PLAY";
     public static final String RATE = "RATE";
     public static final String FDBACK = "FDBACK";
     public static final String BACK = "BACK";
     public static final String COLOR = "COLOR";
-    public static final String CLEAR = "CLR";
+    public static final String CLEAR = "CLEAR";
     public static String[] numberControls = {
             "7", "8", "9", DELETE, "4", "5", "6", CLEAR, "1", "2", "3", PLAY, BLANK, "0", BLANK, SETTINGS
     };

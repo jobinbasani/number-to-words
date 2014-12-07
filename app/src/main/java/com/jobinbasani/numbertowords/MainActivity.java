@@ -28,6 +28,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     private TextView wordTextView;
     private int cellHeight;
     private int totalHeight;
+    private int totalWidth;
     private int cellWidth;
     private GridLayout gridLayout;
     private LruCache<String, View> viewCache;
@@ -41,16 +42,15 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
         wordTextView = (TextView) findViewById(R.id.wordText);
         gridLayout = (GridLayout) findViewById(R.id.controlGrid);
         gridLayout.setLayoutAnimation(new ControlPadAnimation(this));
-        gridLayout.setUseDefaultMargins(false);
-        gridLayout.setAlignmentMode(GridLayout.ALIGN_MARGINS);
 
         final ViewTreeObserver observer = gridLayout.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 totalHeight = gridLayout.getHeight();
-                setCellHeight(gridLayout.getHeight()/NumberUtils.CELL_HEIGHT_DIVISOR);
-                setCellWidth(gridLayout.getWidth()/NumberUtils.CELL_HEIGHT_DIVISOR);
+                totalWidth = gridLayout.getWidth();
+                cellHeight = totalHeight/NumberUtils.CELL_HEIGHT_DIVISOR;
+                cellWidth = totalWidth/NumberUtils.CELL_HEIGHT_DIVISOR;
                 updatePanel(NumberUtils.numberControls, false);
                 gridLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
@@ -114,12 +114,11 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     private View getConfigCell(String config, int index){
         GridNumberCell gridCell = (GridNumberCell) viewCache.get(index+"_"+config.hashCode());
         if(gridCell!=null) return gridCell;
-        int height = 0;
 
         if((index+1)%4 != 0)
-            gridCell = new GridNumberCell(mContext,getCellHeight(index>11),getCellWidth());
+            gridCell = new GridNumberCell(mContext,getCellHeight(index>11),getCellWidth(true));
         else
-            gridCell = new ConfigCell(mContext, getCellHeight(index>11),getCellWidth());
+            gridCell = new ConfigCell(mContext, getCellHeight(index>11),getCellWidth(false));
 
         gridCell.setText(config);
 
@@ -128,26 +127,18 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
 
         gridCell.setLayoutParams(params);
 
-        System.out.println("Key is "+index+"_"+config.hashCode());
         viewCache.put(index+"_"+config.hashCode(),gridCell);
         return gridCell;
     }
 
-    public int getCellWidth() {
+    public int getCellWidth(boolean isLastColumn) {
+        if(isLastColumn) return totalWidth - (cellWidth * (NumberUtils.CELL_HEIGHT_DIVISOR-1));
         return cellWidth;
     }
 
-    public void setCellWidth(int cellWidth) {
-        this.cellWidth = cellWidth;
-    }
-
     public int getCellHeight(boolean isLastRow) {
-        if(isLastRow) return totalHeight - (cellHeight*3);
+        if(isLastRow) return totalHeight - (cellHeight * (NumberUtils.CELL_HEIGHT_DIVISOR-1));
         return cellHeight;
-    }
-
-    public void setCellHeight(int cellHeight) {
-        this.cellHeight = cellHeight;
     }
 
     @Override

@@ -14,6 +14,7 @@ public class ConfigCell extends GridNumberCell {
         super(context, height, width);
         setGravity(Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL);
         setTextSize((float) (height * .06));
+        setPadding(0,0,0,6);
         setBackgroundColor(getResources().getColor(R.color.colorConfigCell));
     }
 
