@@ -26,7 +26,7 @@ public class GridNumberCell extends TextView implements GridBlockI {
         mContext = context;
         setHeight(height);
         setGravity(Gravity.CENTER);
-        setTextSize((float) (height * NumberUtils.CELL_NUMBER_SIZE_FACTOR));
+        setTextSize(height * NumberUtils.CELL_NUMBER_SIZE_FACTOR);
         setWidth(width);
         setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         setTextColor(getResources().getColor(android.support.v7.appcompat.R.color.abc_primary_text_material_dark));

@@ -8,4 +8,6 @@ public interface NumberTransformerI {
     public void clearNumber(boolean clearAll);
     public void updatePanel(String[] cells, boolean animate);
     public void speakNumberText();
+    public void copyToClipboard();
+    public String getShareText();
 }

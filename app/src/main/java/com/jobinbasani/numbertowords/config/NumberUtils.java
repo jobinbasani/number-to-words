@@ -181,4 +181,12 @@ public class NumberUtils {
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, context.getResources().getString(R.string.feedbackSubject));
         return Intent.createChooser(emailIntent, context.getResources().getString(R.string.feedbackIntentTitle));
     }
+
+    public static Intent getShareDataIntent(String data){
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, data);
+        shareIntent.setType("text/plain");
+        return Intent.createChooser(shareIntent, "Share");
+    }
 }

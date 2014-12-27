@@ -1,5 +1,7 @@
 package com.jobinbasani.numbertowords;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -8,8 +10,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.LruCache;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.GridLayout;
@@ -23,6 +23,7 @@ import com.jobinbasani.numbertowords.components.GridTextCell;
 import com.jobinbasani.numbertowords.components.interfaces.NumberTransformerI;
 import com.jobinbasani.numbertowords.config.NumberUtils;
 
+import java.text.DecimalFormat;
 import java.util.Locale;
 
 
@@ -39,12 +40,13 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     private LruCache<String, View> viewCache;
     private TextToSpeech tts;
     private boolean ttsEnabled = false;
+    private DecimalFormat formatter = new DecimalFormat("###,###,###,###,###");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tts = new TextToSpeech(this,this);
-        viewCache = new LruCache<String, View>(32);
+        viewCache = new LruCache<>(32);
         setContentView(R.layout.activity_main);
         numberTextView = (TextView) findViewById(R.id.numberText);
         wordTextView = (TextView) findViewById(R.id.wordText);
@@ -95,11 +97,25 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     }
 
     @Override
+    public void copyToClipboard() {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        clipboard.setPrimaryClip(ClipData.newPlainText("word_text",getShareText()));
+        Toast.makeText(this,"Copied to clipboard...",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public String getShareText() {
+        return numberTextView.getText()+" - "+wordTextView.getText();
+    }
+
+    @Override
     public void updateNumber(String number) {
+        String plainNumber = numberTextView.getText().toString().replaceAll(",","");
         if(numberTextView.getText().toString().equals("0"))
             numberTextView.setText(number);
-        else if(numberTextView.getText().toString().length()<12)
-            numberTextView.append(number);
+        else if(plainNumber.length()<12){
+            numberTextView.setText(getFormattedNumber(Long.valueOf(plainNumber+number)));
+        }
     }
 
     @Override
@@ -107,12 +123,17 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
         if(clearAll){
             numberTextView.setText("0");
         }else{
-            if(numberTextView.getText().length()>1){
-                numberTextView.setText(numberTextView.getText().toString().substring(0,numberTextView.getText().toString().length()-1));
+            String plainNumber = numberTextView.getText().toString().replaceAll(",","");
+            if(plainNumber.length()>1){
+                numberTextView.setText(getFormattedNumber(Long.valueOf(plainNumber.substring(0,plainNumber.length()-1))));
             }else{
                 numberTextView.setText("0");
             }
         }
+    }
+
+    private String getFormattedNumber(long number){
+        return formatter.format(number);
     }
 
     private View getConfigCell(String config, int index){
@@ -162,7 +183,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
 
     @Override
     public void afterTextChanged(Editable editable) {
-        wordTextView.setText(NumberUtils.convert(new Long(numberTextView.getText().toString())));
+        wordTextView.setText(NumberUtils.convert(Long.valueOf(numberTextView.getText().toString().replaceAll(",",""))));
     }
 
     @Override
@@ -173,7 +194,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
 
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Toast.makeText(this,"This Language is not supported",Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "This Language is not supported", Toast.LENGTH_LONG).show();
             } else {
                 ttsEnabled = true;
             }
@@ -182,4 +203,5 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
             Toast.makeText(this,"Text To Speech initialization Failed!",Toast.LENGTH_LONG).show();
         }
     }
+
 }

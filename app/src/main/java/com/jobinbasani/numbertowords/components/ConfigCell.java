@@ -12,7 +12,7 @@ import com.jobinbasani.numbertowords.config.NumberUtils;
 public class ConfigCell extends GridNumberCell {
     public ConfigCell(Context context, int height, int width) {
         super(context, height, width);
-        setTextSize((float) (height * NumberUtils.CELL_TEXT_SIZE_FACTOR));
+        setTextSize(height * NumberUtils.CELL_TEXT_SIZE_FACTOR);
         setBackgroundColor(getResources().getColor(R.color.colorConfigCell));
     }
 
