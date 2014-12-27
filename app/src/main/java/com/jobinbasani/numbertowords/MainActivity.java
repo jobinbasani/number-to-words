@@ -2,6 +2,7 @@ package com.jobinbasani.numbertowords;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,15 +14,19 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.GridLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jobinbasani.numbertowords.components.ConfigCell;
 import com.jobinbasani.numbertowords.components.ControlPadAnimation;
 import com.jobinbasani.numbertowords.components.GridNumberCell;
+import com.jobinbasani.numbertowords.components.GridTextCell;
 import com.jobinbasani.numbertowords.components.interfaces.NumberTransformerI;
 import com.jobinbasani.numbertowords.config.NumberUtils;
 
+import java.util.Locale;
 
-public class MainActivity extends ActionBarActivity implements NumberTransformerI, TextWatcher {
+
+public class MainActivity extends ActionBarActivity implements NumberTransformerI, TextWatcher, TextToSpeech.OnInitListener {
 
     private Context mContext = this;
     private TextView numberTextView;
@@ -32,10 +37,13 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     private int cellWidth;
     private GridLayout gridLayout;
     private LruCache<String, View> viewCache;
+    private TextToSpeech tts;
+    private boolean ttsEnabled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        tts = new TextToSpeech(this,this);
         viewCache = new LruCache<String, View>(32);
         setContentView(R.layout.activity_main);
         numberTextView = (TextView) findViewById(R.id.numberText);
@@ -59,6 +67,15 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     }
 
     @Override
+    protected void onDestroy() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
+    }
+
+    @Override
     public void updatePanel(String[] cells, boolean animate) {
         gridLayout.removeAllViews();
         for(int i=0;i<cells.length;i++){
@@ -69,25 +86,12 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    public void speakNumberText() {
+        if(ttsEnabled){
+            tts.speak(wordTextView.getText().toString(),TextToSpeech.QUEUE_FLUSH,null);
+        }else{
+            Toast.makeText(this,"Unable to use Text To Speech!",Toast.LENGTH_SHORT).show();
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -115,8 +119,13 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
         GridNumberCell gridCell = (GridNumberCell) viewCache.get(index+"_"+config.hashCode());
         if(gridCell!=null) return gridCell;
 
-        if((index+1)%4 != 0)
-            gridCell = new GridNumberCell(mContext,getCellHeight(index>11),getCellWidth(true));
+        if((index+1)%4 != 0){
+            if(NumberUtils.isNumber(config)){
+                gridCell = new GridNumberCell(mContext,getCellHeight(index>11),getCellWidth(true));
+            }else{
+                gridCell = new GridTextCell(mContext,getCellHeight(index>11),getCellWidth(true));
+            }
+        }
         else
             gridCell = new ConfigCell(mContext, getCellHeight(index>11),getCellWidth(false));
 
@@ -154,5 +163,23 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     @Override
     public void afterTextChanged(Editable editable) {
         wordTextView.setText(NumberUtils.convert(new Long(numberTextView.getText().toString())));
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+
+            int result = tts.setLanguage(Locale.US);
+
+            if (result == TextToSpeech.LANG_MISSING_DATA
+                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Toast.makeText(this,"This Language is not supported",Toast.LENGTH_LONG).show();
+            } else {
+                ttsEnabled = true;
+            }
+
+        } else {
+            Toast.makeText(this,"Text To Speech initialization Failed!",Toast.LENGTH_LONG).show();
+        }
     }
 }

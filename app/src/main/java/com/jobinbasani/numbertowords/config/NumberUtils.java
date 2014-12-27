@@ -1,5 +1,11 @@
 package com.jobinbasani.numbertowords.config;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+
+import com.jobinbasani.numbertowords.R;
+
 import java.text.DecimalFormat;
 
 /**
@@ -8,20 +14,23 @@ import java.text.DecimalFormat;
  */
 public class NumberUtils {
     public static final int CELL_HEIGHT_DIVISOR = 4;
+    public static final float CELL_TEXT_SIZE_FACTOR = .06f;
+    public static final float CELL_NUMBER_SIZE_FACTOR = .10f;
     public static final String BLANK = " ";
-    public static final String SETTINGS = "SETTINGS";
+    public static final String MORE_OPTIONS = "...";
     public static final String DELETE = "DELETE";
-    public static final String PLAY = "PLAY";
+    public static final String SPEAK = "SPEAK";
     public static final String RATE = "RATE";
-    public static final String FDBACK = "FDBACK";
+    public static final String FDBACK = "FEEDBACK";
     public static final String BACK = "BACK";
-    public static final String COLOR = "COLOR";
     public static final String CLEAR = "CLEAR";
+    public static final String COPY = "COPY";
+    public static final String SHARE = "SHARE";
     public static String[] numberControls = {
-            "7", "8", "9", DELETE, "4", "5", "6", CLEAR, "1", "2", "3", PLAY, BLANK, "0", BLANK, SETTINGS
+            "7", "8", "9", DELETE, "4", "5", "6", CLEAR, "1", "2", "3", SPEAK, COPY, "0", SHARE, MORE_OPTIONS
     };
     public static String[] optionControls = {
-            FDBACK, RATE, COLOR, BACK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK
+            FDBACK, RATE, BLANK, BACK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK
     };
     private static final String[] tensNames = {
             "",
@@ -165,5 +174,11 @@ public class NumberUtils {
 
     public static boolean isNumber(String str){
         return str.matches("\\d");
+    }
+
+    public static Intent getFeedbackIntent(Context context){
+        Intent emailIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + context.getResources().getString(R.string.feedbackEmail) + "?subject=" + Uri.encode(context.getResources().getString(R.string.feedbackSubject))));
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, context.getResources().getString(R.string.feedbackSubject));
+        return Intent.createChooser(emailIntent, context.getResources().getString(R.string.feedbackIntentTitle));
     }
 }

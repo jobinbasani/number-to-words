@@ -12,22 +12,31 @@ import com.jobinbasani.numbertowords.config.NumberUtils;
 public class ConfigCell extends GridNumberCell {
     public ConfigCell(Context context, int height, int width) {
         super(context, height, width);
-        setGravity(Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL);
-        setTextSize((float) (height * .06));
-        setPadding(0,0,0,6);
+        setTextSize((float) (height * NumberUtils.CELL_TEXT_SIZE_FACTOR));
         setBackgroundColor(getResources().getColor(R.color.colorConfigCell));
     }
 
     @Override
     public void onClick() {
-        runAnimation();
-        if(getText().toString().equals(NumberUtils.DELETE) || getText().toString().equals(NumberUtils.CLEAR)){
-            getNumberTransformer().clearNumber(getText().toString().equals(NumberUtils.CLEAR));
-        }else if(getText().toString().equals(NumberUtils.BACK)){
-            getNumberTransformer().updatePanel(NumberUtils.numberControls,true);
-        }
-        else{
-            getNumberTransformer().updatePanel(NumberUtils.optionControls, true);
+        if(!getText().toString().equals(NumberUtils.BLANK)) {
+            runAnimation();
+            switch (getText().toString()){
+                case NumberUtils.DELETE:
+                    getNumberTransformer().clearNumber(false);
+                    break;
+                case NumberUtils.CLEAR:
+                    getNumberTransformer().clearNumber(true);
+                    break;
+                case NumberUtils.BACK:
+                    getNumberTransformer().updatePanel(NumberUtils.numberControls, true);
+                    break;
+                case NumberUtils.MORE_OPTIONS:
+                    getNumberTransformer().updatePanel(NumberUtils.optionControls, true);
+                    break;
+                case NumberUtils.SPEAK:
+                    getNumberTransformer().speakNumberText();
+                    break;
+            }
         }
     }
 }

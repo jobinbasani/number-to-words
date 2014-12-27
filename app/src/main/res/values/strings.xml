@@ -4,5 +4,8 @@
     <string name="app_name">Number To Words</string>
     <string name="action_settings">Settings</string>
     <string name="initialWord">Zero</string>
+    <string name="feedbackEmail">jbapps@outlook.com</string>
+    <string name="feedbackIntentTitle">Send Feedback</string>
+    <string name="feedbackSubject">Feedback [N2W]</string>
 
 </resources>

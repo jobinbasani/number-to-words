@@ -19,14 +19,14 @@ public class GridNumberCell extends TextView implements GridBlockI {
 
     private Animation animation;
     private NumberTransformerI numberTransformer;
-    private int cellHeight;
+    private Context mContext;
     public GridNumberCell(Context context, int height, int width) {
         super(context);
-        cellHeight = height;
         numberTransformer = (NumberTransformerI) context;
+        mContext = context;
         setHeight(height);
         setGravity(Gravity.CENTER);
-        setTextSize((float) (height * .10));
+        setTextSize((float) (height * NumberUtils.CELL_NUMBER_SIZE_FACTOR));
         setWidth(width);
         setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         setTextColor(getResources().getColor(android.support.v7.appcompat.R.color.abc_primary_text_material_dark));
@@ -44,6 +44,10 @@ public class GridNumberCell extends TextView implements GridBlockI {
 
     protected void runAnimation(){
         startAnimation(animation);
+    }
+
+    protected  Context getCellContext(){
+        return mContext;
     }
 
     protected NumberTransformerI getNumberTransformer(){

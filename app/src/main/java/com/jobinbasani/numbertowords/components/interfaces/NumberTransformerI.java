@@ -7,4 +7,5 @@ public interface NumberTransformerI {
     public void updateNumber(String number);
     public void clearNumber(boolean clearAll);
     public void updatePanel(String[] cells, boolean animate);
+    public void speakNumberText();
 }
