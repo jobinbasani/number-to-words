@@ -3,6 +3,7 @@ package com.jobinbasani.numbertowords;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.ActionBarActivity;
@@ -41,10 +42,13 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     private TextToSpeech tts;
     private boolean ttsEnabled = false;
     private DecimalFormat formatter = new DecimalFormat("###,###,###,###,###");
+    private AudioManager audioManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         tts = new TextToSpeech(this,this);
         viewCache = new LruCache<>(32);
         setContentView(R.layout.activity_main);
@@ -90,6 +94,9 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     @Override
     public void speakNumberText() {
         if(ttsEnabled){
+            if(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)<3){
+                Toast.makeText(this,"Please turn up the volume...",Toast.LENGTH_SHORT).show();
+            }
             tts.speak(wordTextView.getText().toString(),TextToSpeech.QUEUE_FLUSH,null);
         }else{
             Toast.makeText(this,"Unable to use Text To Speech!",Toast.LENGTH_SHORT).show();
@@ -114,7 +121,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
         if(numberTextView.getText().toString().equals("0"))
             numberTextView.setText(number);
         else if(plainNumber.length()<12){
-            numberTextView.setText(getFormattedNumber(Long.valueOf(plainNumber+number)));
+            numberTextView.setText(getFormattedNumber(Long.valueOf(plainNumber + number)));
         }
     }
 
@@ -125,7 +132,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
         }else{
             String plainNumber = numberTextView.getText().toString().replaceAll(",","");
             if(plainNumber.length()>1){
-                numberTextView.setText(getFormattedNumber(Long.valueOf(plainNumber.substring(0,plainNumber.length()-1))));
+                numberTextView.setText(getFormattedNumber(Long.valueOf(plainNumber.substring(0, plainNumber.length() - 1))));
             }else{
                 numberTextView.setText("0");
             }
@@ -184,6 +191,18 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     @Override
     public void afterTextChanged(Editable editable) {
         wordTextView.setText(NumberUtils.convert(Long.valueOf(numberTextView.getText().toString().replaceAll(",",""))));
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        numberTextView.setText(savedInstanceState.getString(NumberUtils.NUMBER_BUNDLE_KEY,"0"));
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(NumberUtils.NUMBER_BUNDLE_KEY,numberTextView.getText().toString());
+        super.onSaveInstanceState(outState);
     }
 
     @Override

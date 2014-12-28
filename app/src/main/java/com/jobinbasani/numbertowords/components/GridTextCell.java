@@ -27,6 +27,9 @@ public class GridTextCell extends GridNumberCell {
                 case NumberUtils.SHARE:
                     getCellContext().startActivity(NumberUtils.getShareDataIntent(getNumberTransformer().getShareText()));
                     break;
+                case NumberUtils.RATE:
+                    getCellContext().startActivity(NumberUtils.getPlaystoreListing(getCellContext()));
+                    break;
             }
         }
     }

@@ -31,7 +31,7 @@ public class ConfigCell extends GridNumberCell {
                     getNumberTransformer().updatePanel(NumberUtils.numberControls, true);
                     break;
                 case NumberUtils.MORE_OPTIONS:
-                    getNumberTransformer().updatePanel(NumberUtils.optionControls, true);
+                    getNumberTransformer().updatePanel(NumberUtils.getOptionControls(getCellContext()), true);
                     break;
                 case NumberUtils.SPEAK:
                     getNumberTransformer().speakNumberText();

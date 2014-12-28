@@ -7,5 +7,6 @@
     <string name="feedbackEmail">jbapps@outlook.com</string>
     <string name="feedbackIntentTitle">Send Feedback</string>
     <string name="feedbackSubject">Feedback [N2W]</string>
+    <string name="playStore">com.android.vending</string>
 
 </resources>

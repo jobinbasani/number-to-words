@@ -14,6 +14,7 @@ import java.text.DecimalFormat;
  */
 public class NumberUtils {
     public static final int CELL_HEIGHT_DIVISOR = 4;
+    public static final String NUMBER_BUNDLE_KEY = "USER_NUMBER";
     public static final float CELL_TEXT_SIZE_FACTOR = .06f;
     public static final float CELL_NUMBER_SIZE_FACTOR = .10f;
     public static final String BLANK = " ";
@@ -29,9 +30,7 @@ public class NumberUtils {
     public static String[] numberControls = {
             "7", "8", "9", DELETE, "4", "5", "6", CLEAR, "1", "2", "3", SPEAK, COPY, "0", SHARE, MORE_OPTIONS
     };
-    public static String[] optionControls = {
-            FDBACK, RATE, BLANK, BACK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK
-    };
+
     private static final String[] tensNames = {
             "",
             " ten",
@@ -188,5 +187,34 @@ public class NumberUtils {
         shareIntent.putExtra(Intent.EXTRA_TEXT, data);
         shareIntent.setType("text/plain");
         return Intent.createChooser(shareIntent, "Share");
+    }
+
+    public static boolean showRateApp(Context context){
+        String installedBy = context.getPackageManager().getInstallerPackageName(context.getPackageName());
+        if(installedBy == null || !installedBy.equals(context.getResources().getString(R.string.playStore))){
+            return false;
+        }
+        return true;
+    }
+
+    public static String[] getOptionControls(Context context){
+        String[] optionControls = {
+                FDBACK, RATE, BLANK, BACK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK, BLANK
+        };
+        int ratePosition = -1;
+        for(int i=0;i<optionControls.length;i++){
+            if(optionControls[i].equals(RATE))ratePosition = i;
+        }
+        if(ratePosition!=-1 && !showRateApp(context)){
+            optionControls[ratePosition] = BLANK;
+        }
+        return optionControls;
+    }
+
+    public static Intent getPlaystoreListing(Context context){
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse("market://details?id="+context.getPackageName()));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        return intent;
     }
 }
