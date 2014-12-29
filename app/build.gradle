@@ -10,6 +10,11 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+        applicationVariants.all { variant ->
+            variant.outputs.each  { output ->
+                output.outputFile = new File(output.outputFile.parent, "numtowords-" + defaultConfig.versionName + ".apk")
+            }
+        }
     }
     buildTypes {
         release {
