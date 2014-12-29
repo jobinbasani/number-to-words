@@ -17,6 +17,10 @@ import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.jobinbasani.numbertowords.components.ConfigCell;
 import com.jobinbasani.numbertowords.components.ControlPadAnimation;
 import com.jobinbasani.numbertowords.components.GridNumberCell;
@@ -25,6 +29,7 @@ import com.jobinbasani.numbertowords.components.interfaces.NumberTransformerI;
 import com.jobinbasani.numbertowords.config.NumberUtils;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.Locale;
 
 
@@ -43,6 +48,37 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     private boolean ttsEnabled = false;
     private DecimalFormat formatter = new DecimalFormat("###,###,###,###,###");
     private AudioManager audioManager;
+    private boolean googlePlayServicesAvailable = false;
+    public enum TrackerName {
+        APP_TRACKER
+    };
+
+    HashMap<TrackerName, Tracker> mTrackers = new HashMap<>();
+    synchronized Tracker getTracker(TrackerName trackerId) {
+        if (!mTrackers.containsKey(trackerId)) {
+
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker(R.xml.apptracker):null;
+
+            mTrackers.put(trackerId, t);
+
+        }
+        return mTrackers.get(trackerId);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(googlePlayServicesAvailable)
+            GoogleAnalytics.getInstance(this).reportActivityStop(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(googlePlayServicesAvailable)
+            GoogleAnalytics.getInstance(this).reportActivityStart(this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +92,10 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
         wordTextView = (TextView) findViewById(R.id.wordText);
         gridLayout = (GridLayout) findViewById(R.id.controlGrid);
         gridLayout.setLayoutAnimation(new ControlPadAnimation(this));
-
+        if(GooglePlayServicesUtil.isGooglePlayServicesAvailable(this)== ConnectionResult.SUCCESS){
+            googlePlayServicesAvailable = true;
+            getTracker(TrackerName.APP_TRACKER);
+        }
         final ViewTreeObserver observer = gridLayout.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
