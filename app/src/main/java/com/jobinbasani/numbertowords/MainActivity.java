@@ -6,7 +6,6 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.LruCache;
@@ -16,6 +15,8 @@ import android.view.ViewTreeObserver;
 import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.jobinbasani.numbertowords.components.ConfigCell;
 import com.jobinbasani.numbertowords.components.ControlPadAnimation;
@@ -28,9 +29,9 @@ import java.text.DecimalFormat;
 import java.util.Locale;
 
 
-public class MainActivity extends ActionBarActivity implements NumberTransformerI, TextWatcher, TextToSpeech.OnInitListener {
+public class MainActivity extends AppCompatActivity implements NumberTransformerI, TextWatcher, TextToSpeech.OnInitListener {
 
-    private Context mContext = this;
+    private final Context mContext = this;
     private TextView numberTextView;
     private TextView wordTextView;
     private int cellHeight;
@@ -41,7 +42,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
     private LruCache<String, View> viewCache;
     private TextToSpeech tts;
     private boolean ttsEnabled = false;
-    private DecimalFormat formatter = new DecimalFormat("###,###,###,###,###");
+    private final DecimalFormat formatter = new DecimalFormat("###,###,###,###,###");
     private AudioManager audioManager;
 
     @Override
@@ -52,9 +53,9 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
         tts = new TextToSpeech(this,this);
         viewCache = new LruCache<>(32);
         setContentView(R.layout.activity_main);
-        numberTextView = (TextView) findViewById(R.id.numberText);
-        wordTextView = (TextView) findViewById(R.id.wordText);
-        gridLayout = (GridLayout) findViewById(R.id.controlGrid);
+        numberTextView = findViewById(R.id.numberText);
+        wordTextView = findViewById(R.id.wordText);
+        gridLayout = findViewById(R.id.controlGrid);
         gridLayout.setLayoutAnimation(new ControlPadAnimation(this));
 
         final ViewTreeObserver observer = gridLayout.getViewTreeObserver();
@@ -121,7 +122,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
         if(numberTextView.getText().toString().equals("0"))
             numberTextView.setText(number);
         else if(plainNumber.length()<12){
-            numberTextView.setText(getFormattedNumber(Long.valueOf(plainNumber + number)));
+            numberTextView.setText(getFormattedNumber(Long.parseLong(plainNumber + number)));
         }
     }
 
@@ -132,7 +133,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
         }else{
             String plainNumber = numberTextView.getText().toString().replaceAll(",","");
             if(plainNumber.length()>1){
-                numberTextView.setText(getFormattedNumber(Long.valueOf(plainNumber.substring(0, plainNumber.length() - 1))));
+                numberTextView.setText(getFormattedNumber(Long.parseLong(plainNumber.substring(0, plainNumber.length() - 1))));
             }else{
                 numberTextView.setText("0");
             }
@@ -190,7 +191,7 @@ public class MainActivity extends ActionBarActivity implements NumberTransformer
 
     @Override
     public void afterTextChanged(Editable editable) {
-        wordTextView.setText(NumberUtils.convert(Long.valueOf(numberTextView.getText().toString().replaceAll(",",""))));
+        wordTextView.setText(NumberUtils.convert(Long.parseLong(numberTextView.getText().toString().replaceAll(",",""))));
     }
 
     @Override
